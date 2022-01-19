@@ -2,12 +2,12 @@ namespace RecImage.Repositories
 {
     public class RepositoryManager
     {
-        private UserRepository _users;
+        private IUserRepository _users;
         private RepositoryContext _context;
         public RepositoryManager(RepositoryContext context){
             _context  = context;
         }
-        public UserRepository Users{
+        public IUserRepository Users{
             get{
                 if(_users == null){
                     _users = new UserRepository(_context);
@@ -16,6 +16,9 @@ namespace RecImage.Repositories
             }}
         public void SaveChanges(){
             _context.SaveChanges();
+        }
+        public async Task SaveChangesAsync(){
+            await _context.SaveChangesAsync();
         }
     }
 }

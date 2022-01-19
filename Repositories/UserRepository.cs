@@ -21,6 +21,9 @@ namespace RecImage.Repositories
         {
             return _context.Users.Include(u =>u.Images).Where(u => u.Login == Login).FirstOrDefault();
         }
+        public User? GetUserById(int id){
+            return _context.Users.Include(u => u.Images).Where(u=>u.UserId == id).FirstOrDefault();
+        }
     }
     public class UserConfiguration
     {

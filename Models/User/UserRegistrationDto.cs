@@ -1,6 +1,5 @@
 namespace RecImage{
     public class UserRegistrationDto{
-        public string? Login;
-
+        public string? Login{get;set;}
     }
 }

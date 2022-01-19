@@ -1,5 +1,8 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RecImage.Models{
     public class UserLoginDto{
-        public string? Login;
+        [Required]
+        public string Login{get;set;}
     }
 }

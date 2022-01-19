@@ -12,7 +12,6 @@ namespace RecImage.Models{
             Creation = meta.Creation;
             ImageHash = meta.ImageHash;
         }
-        [Key]
         public int Id{get;set;}
         public string? OriginalFile{get;set;}
         public string? ModifiedFile{get;set;}

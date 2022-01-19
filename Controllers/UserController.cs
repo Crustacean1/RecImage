@@ -14,17 +14,30 @@ namespace RecImage.Controllers{
             _repoManager = manager;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserResultDto>>> GetCrap(){
-            if(_repoManager == null){
-                _logger.LogInformation("Empty repo manager");
-                return StatusCode(500);
+        public async Task<ActionResult<List<UserResultDto>>> GetAllUsers(){
+            var users = await _repoManager.Users.GetAllUsers();
+            List<UserResultDto> usersWithDto = users.Select<User,UserResultDto>(u => {return new UserResultDto(u ,u.Images.Select(i => new MetaDataDto(i)).ToList());}).ToList();
+            return usersWithDto;
+        }
+        [HttpGet("{id}")]
+        public ActionResult<UserResultDto> GetUser(int id){
+            var user = _repoManager.Users.GetUserById(id);
+            if(user == null){
+                return StatusCode(404);
             }
-            var users = (await _repoManager.Users.GetAllUsers()).Select(u => new UserResultDto(u));
-            return users;
+            var userResponse = new UserResultDto(user,user.Images.Select(i => new MetaDataDto(i)).ToList());
+            return userResponse;
         }
         [HttpPost]
-        public ActionResult<User> RegisterUser(UserRegistrationDto user){
-            return NoContent();
+        public async Task<ActionResult<User>> RegisterUser([FromBody] UserRegistrationDto user){
+            if(!ModelState.IsValid){
+                return StatusCode(422);
+            }
+            var newUser = new Models.User(user);
+            _logger.LogInformation("New login : " + user.Login);
+            _repoManager.Users.AddUser(newUser);
+            await _repoManager.SaveChangesAsync();
+            return newUser;
         }
     }
 }
