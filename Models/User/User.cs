@@ -17,6 +17,6 @@ namespace RecImage.Models{
         [Key]
         public int UserId{get;set;}
         public string? Login{get;set;}
-        public ICollection<MetaData> Images{get;set;}
+        public ICollection<ImageInfo> Images{get;set;}
     }
 }

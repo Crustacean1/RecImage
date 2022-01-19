@@ -8,6 +8,6 @@ namespace RecImage.Models{
         }
         public string? Login{get;set;}
         public int Id{get;set;}
-        public IEnumerable<MetaData> Images{get;set;}
+        public IEnumerable<ImageInfo> Images{get;set;}
     }
 }

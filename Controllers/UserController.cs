@@ -5,18 +5,18 @@ using RecImage.Repositories;
 namespace RecImage.Controllers{
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase{
+    public class UsersController : ControllerBase{
 
         private readonly ILogger _logger;
         private readonly RepositoryManager _repoManager;
-        public UserController(ILogger<UserController> logger, RepositoryManager manager){
+        public UsersController(ILogger<UsersController> logger, RepositoryManager manager){
             _logger = logger;
             _repoManager = manager;
         }
         [HttpGet]
         public async Task<ActionResult<List<UserResultDto>>> GetAllUsers(){
             var users = await _repoManager.Users.GetAllUsers();
-            List<UserResultDto> usersWithDto = users.Select<User,UserResultDto>(u => {return new UserResultDto(u ,u.Images.Select(i => new MetaDataDto(i)).ToList());}).ToList();
+            List<UserResultDto> usersWithDto = users.Select<User,UserResultDto>(u => {return new UserResultDto(u ,u.Images.Select(i => new ImageInfoDto(i)).ToList());}).ToList();
             return usersWithDto;
         }
         [HttpGet("{id}")]
@@ -25,7 +25,7 @@ namespace RecImage.Controllers{
             if(user == null){
                 return StatusCode(404);
             }
-            var userResponse = new UserResultDto(user,user.Images.Select(i => new MetaDataDto(i)).ToList());
+            var userResponse = new UserResultDto(user,user.Images.Select(i => new ImageInfoDto(i)).ToList());
             return userResponse;
         }
         [HttpPost]

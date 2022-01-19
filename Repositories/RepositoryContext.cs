@@ -10,8 +10,8 @@ namespace RecImage.Repositories{
             var userConf = new UserConfiguration();
             userConf.Configure(modelBuilder);
         }
-        public DbSet<User> Users{get;set;}
-        public DbSet<MetaData> MetaData{get;set;}
+        public DbSet<User>? Users{get;set;}
+        public DbSet<ImageInfo>? ImageInfo{get;set;}
     
     }
 }

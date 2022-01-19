@@ -132,3 +132,4 @@
 /home/kamil/Projects/Recruitment/RecImage/bin/Debug/net6.0/runtimes/win/lib/netstandard2.0/System.Runtime.Caching.dll
 /home/kamil/Projects/Recruitment/RecImage/bin/Debug/net6.0/runtimes/win/lib/netstandard2.0/System.Security.Cryptography.ProtectedData.dll
 /home/kamil/Projects/Recruitment/RecImage/bin/Debug/net6.0/runtimes/win/lib/netcoreapp3.0/System.Windows.Extensions.dll
+/home/kamil2/Projects/Recruitment/RecImage/bin/Debug/net6.0/SixLabors.ImageSharp.dll

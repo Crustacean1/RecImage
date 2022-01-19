@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/home/kamil/Projects/Recruitment/RecImage/RecImage.csproj": {}
+    "/home/kamil2/Projects/Recruitment/RecImage/RecImage.csproj": {}
   },
   "projects": {
-    "/home/kamil/Projects/Recruitment/RecImage/RecImage.csproj": {
+    "/home/kamil2/Projects/Recruitment/RecImage/RecImage.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/kamil/Projects/Recruitment/RecImage/RecImage.csproj",
+        "projectUniqueName": "/home/kamil2/Projects/Recruitment/RecImage/RecImage.csproj",
         "projectName": "RecImage",
-        "projectPath": "/home/kamil/Projects/Recruitment/RecImage/RecImage.csproj",
-        "packagesPath": "/home/kamil/.nuget/packages/",
-        "outputPath": "/home/kamil/Projects/Recruitment/RecImage/obj/",
+        "projectPath": "/home/kamil2/Projects/Recruitment/RecImage/RecImage.csproj",
+        "packagesPath": "/home/kamil2/.nuget/packages/",
+        "outputPath": "/home/kamil2/Projects/Recruitment/RecImage/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/kamil/.nuget/NuGet/NuGet.Config"
+          "/home/kamil2/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
@@ -68,6 +68,10 @@
               "target": "Package",
               "version": "[6.0.0, )"
             },
+            "SixLabors.ImageSharp": {
+              "target": "Package",
+              "version": "[1.0.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.2.3, )"
@@ -83,6 +87,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.0, 6.0.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
