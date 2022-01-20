@@ -16,7 +16,7 @@ namespace RecImage.Controllers{
         [HttpGet]
         public async Task<ActionResult<List<UserResultDto>>> GetAllUsers(){
             var users = await _repoManager.Users.GetAllUsers();
-            List<UserResultDto> usersWithDto = users.Select<User,UserResultDto>(u => {return new UserResultDto(u ,u.Images.Select(i => new ImageInfoDto(i)).ToList());}).ToList();
+            List<UserResultDto> usersWithDto = users.Select<User,UserResultDto>(u => {return new UserResultDto(u ,u.Images.Select(i => new ImageInfoResponseDto(i)).ToList());}).ToList();
             return usersWithDto;
         }
         [HttpGet("{id}")]
@@ -25,7 +25,7 @@ namespace RecImage.Controllers{
             if(user == null){
                 return StatusCode(404);
             }
-            var userResponse = new UserResultDto(user,user.Images.Select(i => new ImageInfoDto(i)).ToList());
+            var userResponse = new UserResultDto(user,user.Images.Select(i => new ImageInfoResponseDto(i)).ToList());
             return userResponse;
         }
         [HttpPost]

@@ -11,10 +11,10 @@ namespace RecImage.Models{
         [Key]
         public int Id{get;set;}
         public string? Name{get;set;}
-        public string? OriginalFile{get;set;}
-        public string? ModifiedFile{get;set;}
-        public DateTime Creation{get;set;}
+        public string? Extension{get;set;}
         public string? ImageHash{get;set;}
+        public bool IsUploaded{get;set;} = false;
+        public DateTime Creation{get;set;}
         public int ImageUserId{get;set;}
         public User? ImageUser{get;set;}
     }

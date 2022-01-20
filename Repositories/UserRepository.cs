@@ -44,31 +44,28 @@ namespace RecImage.Repositories
             };
             List<ImageInfo> metaData = new List<ImageInfo>{
                         new ImageInfo{
-                            OriginalFile = "ladybug_shop.jpg",
                             ImageHash = "hashhashhash",
-                            ModifiedFile = "cockroach_shop.jpg",
                             Creation = DateTime.Now,
                             Id = 1,
                             ImageUserId = 1,
+                            IsUploaded = false,
                             Name = "ladybug"
                         },
                         new ImageInfo{
-                            OriginalFile = "frog_shop.jpg",
                             ImageHash = "hashhashhash",
-                            ModifiedFile = "duck_shop.jpg",
                             Creation = DateTime.Now,
                             Id = 2,
                             ImageUserId = 1,
+                            IsUploaded = false,
                             Name = "frog"
                         },
                         new ImageInfo {
-                            OriginalFile = "pepe_the_frog.jpg",
                             ImageHash = "hashhashhash",
-                            ModifiedFile = "pepe_the_duck.jpg",
                             Creation = DateTime.Now,
                             Id = 3,
                             ImageUserId = 1,
-                            Name = "4chan"
+                            IsUploaded = false,
+                            Name = "pepe"
                         }
             };
             builder.Entity<User>().HasData(users);

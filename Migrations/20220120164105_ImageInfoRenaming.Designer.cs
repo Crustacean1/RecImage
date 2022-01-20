@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RecImage.Repositories;
 
@@ -10,9 +11,10 @@ using RecImage.Repositories;
 namespace RecImage.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20220120164105_ImageInfoRenaming")]
+    partial class ImageInfoRenaming
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +39,6 @@ namespace RecImage.Migrations
                     b.Property<int>("ImageUserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsUploaded")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
@@ -53,31 +52,28 @@ namespace RecImage.Migrations
                         new
                         {
                             Id = 1,
-                            Creation = new DateTime(2022, 1, 20, 18, 23, 29, 686, DateTimeKind.Local).AddTicks(9613),
+                            Creation = new DateTime(2022, 1, 20, 17, 41, 4, 809, DateTimeKind.Local).AddTicks(8879),
                             Extension = "jpg",
                             ImageHash = "hashhashhash",
                             ImageUserId = 1,
-                            IsUploaded = false,
                             Name = "ladybug"
                         },
                         new
                         {
                             Id = 2,
-                            Creation = new DateTime(2022, 1, 20, 18, 23, 29, 686, DateTimeKind.Local).AddTicks(9648),
+                            Creation = new DateTime(2022, 1, 20, 17, 41, 4, 809, DateTimeKind.Local).AddTicks(8911),
                             Extension = "jpg",
                             ImageHash = "hashhashhash",
                             ImageUserId = 1,
-                            IsUploaded = false,
                             Name = "frog"
                         },
                         new
                         {
                             Id = 3,
-                            Creation = new DateTime(2022, 1, 20, 18, 23, 29, 686, DateTimeKind.Local).AddTicks(9651),
+                            Creation = new DateTime(2022, 1, 20, 17, 41, 4, 809, DateTimeKind.Local).AddTicks(8914),
                             Extension = "jpg",
                             ImageHash = "hashhashhash",
                             ImageUserId = 1,
-                            IsUploaded = false,
                             Name = "pepe"
                         });
                 });
