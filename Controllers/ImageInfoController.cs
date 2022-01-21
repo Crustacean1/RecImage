@@ -23,22 +23,21 @@ namespace RecImage.Controllers
             var image = _repositoryManager.ImageInfo.GetImageInfo(metaId, trackChanges: false);
             if (image == null)
             {
-                return NotFound();
+                return NotFound("No image with that id found");
             }
             if(Request.Headers["x-user-id"].Equals("")){
-                return Forbid();
+                return Forbid("You need to specifiy x-user-id in header");
             }
             var userId = Convert.ToInt32((Request.Headers["x-user-id"]));
             if (image.ImageUserId != userId)
             {
-                return Unauthorized();
+                return Unauthorized("You don't have access to this image");
             }
             return new ImageInfoResponseDto(image);
         }
         [HttpGet]
         public ActionResult<ICollection<ImageInfoResponseDto>> getAllImageInfoFromUser()
         {
-            //_logger.LogInformation("Get images from user: " + userId);
             if(Request.Headers["x-user-id"].Equals("")){
                 return Forbid();
             }

@@ -44,24 +44,18 @@ namespace RecImage.Repositories
             };
             List<ImageInfo> metaData = new List<ImageInfo>{
                         new ImageInfo{
-                            ImageHash = "hashhashhash",
-                            Creation = DateTime.Now,
                             Id = 1,
                             ImageUserId = 1,
                             IsUploaded = false,
                             Name = "ladybug"
                         },
                         new ImageInfo{
-                            ImageHash = "hashhashhash",
-                            Creation = DateTime.Now,
                             Id = 2,
                             ImageUserId = 1,
                             IsUploaded = false,
                             Name = "frog"
                         },
                         new ImageInfo {
-                            ImageHash = "hashhashhash",
-                            Creation = DateTime.Now,
                             Id = 3,
                             ImageUserId = 1,
                             IsUploaded = false,
