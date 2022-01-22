@@ -1,5 +1,6 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using RecImage.Models;
 
 namespace RecImage.Logic
 {
@@ -9,7 +10,7 @@ namespace RecImage.Logic
         {
 
         }
-        public Image<Rgba32> FilterImage(Image<Rgba32> image)
+        public void FilterImage(Image<Rgba32> image, JobInfo jobInfo)
         {
             for (int y = 0; y < image.Height ; ++y)
             {
@@ -21,8 +22,8 @@ namespace RecImage.Logic
                     rowSpan[x] = rowSpan[image.Width- 1 - x];
                     rowSpan[image.Width- 1 - x] = leftPixel;
                 }
+                jobInfo.CompletionPercent = (int)(100*y/image.Height);
             }
-            return image;
         }
     }
 }

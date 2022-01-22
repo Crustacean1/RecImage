@@ -5,10 +5,10 @@ namespace RecImage.Repositories{
         public ImageInfoRepository(RepositoryContext context){
             _context = context;
         }
-        public ImageInfo GetImageInfo(int id,bool trackChanges){
+        public ImageInfo GetImageInfo(int id){
             return _context.ImageInfo.Where(i => i.Id == id).FirstOrDefault();
         }
-        public ICollection<ImageInfo> GetAllImageInfo(int userId, bool trackChanges){
+        public ICollection<ImageInfo> GetAllImageInfo(int userId){
             if(_context == null || _context.ImageInfo == null){
                 return new List<ImageInfo>();
             }

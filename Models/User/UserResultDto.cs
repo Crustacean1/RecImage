@@ -15,6 +15,6 @@ namespace RecImage.Models{
         
         public int UserId{get;set;}
         public string? Login{get;set;}
-        public IEnumerable<ImageInfoResponseDto> Images{get;set;}
+        public IEnumerable<ImageInfoResponseDto>? Images{get;set;}
     }
 }

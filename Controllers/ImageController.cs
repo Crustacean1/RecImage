@@ -5,87 +5,76 @@ using RecImage.Repositories;
 using RecImage.Logic;
 using RecImage.Services;
 
-namespace RecImage.Controllers{
+namespace RecImage.Controllers
+{
     [ApiController]
     [Route("[controller]")]
-    public class ImageController : ControllerBase{
+    public class ImageController : ControllerBase
+    {
         private readonly RepositoryManager _repositoryManager;
         private readonly ImageService _imageService;
+        private readonly AuthorizationService _authService;
         private readonly ImageProcessorService _imageProcessor;
 
         private readonly ILogger<ImageController> _logger;
-        public ImageController(RepositoryManager repositoryManager,ImageService imageService,IServiceProvider serviceProvider,ILogger<ImageController> logger){
+        public ImageController(RepositoryManager repositoryManager, AuthorizationService authService, ImageService imageService, IServiceProvider serviceProvider, ILogger<ImageController> logger)
+        {
             _repositoryManager = repositoryManager;
             _imageService = imageService;
+            _authService = authService;
             _logger = logger;
-            _imageProcessor = serviceProvider.GetServices<IHostedService>().OfType<ImageProcessorService>().FirstOrDefault();
-            if(_imageProcessor == null){
-                _logger.LogInformation("image processor not found, we are doomed");
-            }
-        }
-        [HttpPost]
-        public ActionResult ApplyFilters(){
-            return Ok();
+            _imageProcessor = serviceProvider.GetServices<IHostedService>().OfType<ImageProcessorService>().First();
         }
         [HttpGet("{id}")]
-        public ActionResult GetImage(int id){
-            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id,trackChanges: false);
-            if(imageInfo == null){
+        public ActionResult GetImage(int id)
+        {
+            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id);
+            if (imageInfo == null)
+            {
                 return NotFound("No such image info found");
             }
             var fullPath = _imageService.GetImagePath(imageInfo);
             var mimeType = new string("");
-            var mimeProvider = new FileExtensionContentTypeProvider().TryGetContentType(fullPath,out mimeType);
-            if(mimeType == null){
-                return StatusCode(500,"Couldn't infer mime type");
+            var mimeProvider = new FileExtensionContentTypeProvider().TryGetContentType(fullPath, out mimeType);
+            if (mimeType == null)
+            {
+                return StatusCode(500, "Couldn't infer mime type");
             }
-            return PhysicalFile(fullPath,mimeType,imageInfo.Name);
+            return PhysicalFile(fullPath, mimeType, imageInfo.Name);
         }
         [HttpGet]
-        public ActionResult GetAllFilters(){
+        public ActionResult GetAllFilters()
+        {
             return Ok();
         }
         [HttpPost("{id}")]
-        public async Task<ActionResult> ApplyFilter(int id,IEnumerable<string> filterList){
-            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id,true);
-            foreach(var str in filterList){
-                _logger.LogInformation(str);
+        public async Task<ActionResult> ApplyFilter(int id, IEnumerable<string> filterList)
+        {
+            var imageInfo = _authService.AuthorizeImageAccess(Request.Headers,id);
+            if(imageInfo == null){
+                return NotFound();
             }
-            try{
+            try
+            {
                 List<IFilter> filters = FilterFactory.buildFilters(filterList);
-                await _imageProcessor.AddNewJob(new Job(imageInfo,filters));
-            }catch(ArgumentException e){
-                _logger.LogInformation("Failed to construct filter list");
+                await _imageProcessor.AddNewJob(new Job(imageInfo, filters));
+            }
+            catch (ArgumentException e)
+            {
+                _logger.LogInformation("Failed to construct filter list: " + e.ToString());
                 return BadRequest();
             }
             return Ok();
         }
         [HttpPut("{id}")]
-        [RequestSizeLimit(100_100_100)]
-        public async Task<ActionResult<ImageInfoResponseDto>> CreateNewImage(int id, IFormFile image)
+        public async Task<ActionResult<ImageInfoResponseDto>> CreateNewImage(int id, IFormFile image,[FromForm] string filepath)
         {
-            _logger.LogInformation("User: "+ Request.Headers["x-user-id"]);
-            if (!Request.Headers.ContainsKey("x-user-id"))
-            {
-                return Unauthorized();
-            }
-            var userId = Convert.ToInt32((Request.Headers["x-user-id"]));
-            var user = _repositoryManager.Users.GetUserById(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id, trackChanges: true);
+            _logger.LogInformation(filepath);
+            var imageInfo = _authService.AuthorizeImageAccess(Request.Headers,id);
             if (imageInfo == null)
             {
                 ModelState.AddModelError("id", "invalid image id");
                 _logger.LogInformation("imageInfo is null");
-                return BadRequest(ModelState);
-            }
-            if (imageInfo.ImageUserId != user.UserId)
-            {
-                ModelState.AddModelError("user", "unauthorized user");
-                _logger.LogInformation("Unathorized upload: " + user.UserId);
                 return BadRequest(ModelState);
             }
             if (imageInfo.IsUploaded)

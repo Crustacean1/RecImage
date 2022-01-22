@@ -17,7 +17,7 @@ namespace RecImage.Repositories
         {
             _context.Add(user);
         }
-        public User? GetUserByLogin(string Login, bool noTrack)
+        public User? GetUserByLogin(string Login)
         {
             return _context.Users.Include(u =>u.Images).Where(u => u.Login == Login).FirstOrDefault();
         }

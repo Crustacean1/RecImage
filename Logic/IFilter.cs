@@ -1,7 +1,9 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using RecImage.Models;
+
 namespace RecImage.Logic{
     public interface IFilter{
-        Image<Rgba32> FilterImage(Image<Rgba32> image);
+        void FilterImage(Image<Rgba32> image, JobInfo jobInfo);
     }
 }

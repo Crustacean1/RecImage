@@ -14,6 +14,7 @@ public class Program
         builder.Services.AddScoped<RecImage.Repositories.RepositoryManager>();
         builder.Services.AddSingleton<RecImage.Repositories.ImageRepository>();
         builder.Services.AddScoped<RecImage.Services.ImageService>();
+        builder.Services.AddScoped<RecImage.Services.AuthorizationService>();
 
         builder.Services.AddHostedService<RecImage.Logic.ImageProcessorService>();
 

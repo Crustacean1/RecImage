@@ -32,7 +32,7 @@ namespace RecImage.Logic
             _jobDict.Append(new KeyValuePair<int, Job>(jobId, imageJob));
             return jobId;
         }
-        public Job GetJob(int jobId)
+        public Job? GetJob(int jobId)
         {
             if (!_jobDict.ContainsKey(jobId))
             {
@@ -42,17 +42,16 @@ namespace RecImage.Logic
         }
         private Job ProcessImage(Job imageJob)
         {
-            //Thread.Sleep(5000);
-            Image<Rgba32> image = _imageRepository.GetImage(imageJob.ImageToProcess, false);
+            Image<Rgba32>? image = _imageRepository.GetImage(imageJob.SourceImageInfo,false);
             if (image == null)
             {
                 _logger.LogInformation("Failed to load image");
+                return imageJob;
             }
-            _logger.LogInformation("AAAA");
-            _logger.LogInformation("Filter count: " + imageJob.Filters.Count());
+            if(imageJob.Filters == null){return imageJob;}
             foreach (var filter in imageJob.Filters)
             {
-                image = filter.FilterImage(image);
+                filter.FilterImage(image,imageJob.Info);
                 _logger.LogInformation("Processing image");
                 if (image == null)
                 {
@@ -61,7 +60,6 @@ namespace RecImage.Logic
             }
             imageJob.ResultImage = image;
             return imageJob;
-            //return await Task.Delay(100);
         }
         private void StartJob(Job newJob)
         {
@@ -78,13 +76,13 @@ namespace RecImage.Logic
                 StartJob(newJob);
             }
         }
-        public async Task SaveImage(Job completedJob)
+        private async Task SaveImage(Job completedJob)
         {
-            if (completedJob.ResultImage == null || completedJob.ImageToProcess == null)
+            if (completedJob.ResultImage == null || completedJob.SourceImageInfo == null)
             {
                 return;
             }
-            await _imageRepository.SaveImage(completedJob.ResultImage, completedJob.ImageToProcess);
+            await _imageRepository.SaveImage(completedJob.ResultImage, completedJob.SourceImageInfo);
         }
         protected async override Task ExecuteAsync(CancellationToken token)
         {
