@@ -4,7 +4,7 @@ namespace RecImage.Repositories
     {
         private IUserRepository? _users;
         private IImageInfoRepository? _imageInfo;
-        private IImageRepository _images;
+        //private IImageRepository _images;
         private RepositoryContext _context;
         public RepositoryManager(RepositoryContext context)
         {
@@ -33,14 +33,14 @@ namespace RecImage.Repositories
             }
         }
 
-        public IImageRepository Images{
+        /*public IImageRepository Images{
             get{
                 if(_images == null){
                     _images = new ImageRepository();
                 }
                 return _images;
             }
-        }
+        }*/
 
         public void SaveChanges()
         {

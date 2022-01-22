@@ -3,9 +3,9 @@ using SixLabors.ImageSharp.PixelFormats;
 
 namespace RecImage.Logic
 {
-    public class InverseFilter : IFilter
+    public class FlipFilter : IFilter
     {
-        public InverseFilter()
+        public FlipFilter()
         {
 
         }
@@ -14,10 +14,12 @@ namespace RecImage.Logic
             for (int y = 0; y < image.Height ; ++y)
             {
                 var rowSpan = image.GetPixelRowSpan(y);
-                for (int x = 0; x < image.Width; ++x)
+                for (int x = 0; x < image.Width/2 ; ++x)
                 {
-                    var pixel = rowSpan[x];
-                    rowSpan[x] = new Rgba32((byte)(255-pixel.R),(byte)(255-pixel.G),(byte)(255-pixel.B),(byte)255);
+                    var leftPixel = rowSpan[x]; 
+                    rowSpan[x] = rowSpan[image.Width -1 - x];
+                    rowSpan[x] = rowSpan[image.Width- 1 - x];
+                    rowSpan[image.Width- 1 - x] = leftPixel;
                 }
             }
             return image;

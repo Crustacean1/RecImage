@@ -1,6 +1,7 @@
 using RecImage.Models;
 using System.IO;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace RecImage.Repositories
 {
@@ -13,31 +14,23 @@ namespace RecImage.Repositories
         }
         public string GetFullPath(ImageInfo info, bool filtered)
         {
-            return Path.ChangeExtension(Path.Join("images/", filtered ? "output" : "source", generateUniqueFilename(info)), info.Extension);
+            return Path.ChangeExtension(Path.Join(Directory.GetCurrentDirectory(), "images/", filtered ? "output" : "source", generateUniqueFilename(info)), info.Extension);
         }
 
-        public async Task<bool> SaveImage(IFormFile image, ImageInfo info, bool filtered)
+        public async Task SaveImage(IFormFile image, ImageInfo info)
         {
+            bool filtered = false;
             var filePath = GetFullPath(info, filtered);
-            if (File.Exists(filePath))
-            {
-                return false;
-            }
             using (Stream newFile = new FileStream(filePath, FileMode.Create))
             {
                 await image.CopyToAsync(newFile);
             }
-            return true;
         }
-        public async Task<bool> SaveImage(Image image, ImageInfo info, bool filtered)
+        public async Task SaveImage(Image image, ImageInfo info)
         {
+            bool filtered = true;
             var filePath = GetFullPath(info, filtered);
-            if (File.Exists(filePath))
-            {
-                return false;
-            }
             await image.SaveAsync(filePath);
-            return true;
         }
         public void UpdateImageInfo(IFormFile image, ImageInfo info)
         {
@@ -61,14 +54,14 @@ namespace RecImage.Repositories
             var imagePath = GetFullPath(imageInfo, filtered);
             return File.Exists(imagePath);
         }
-        public Image GetImage(ImageInfo imageInfo, bool filtered)
+        public Image<Rgba32>? GetImage(ImageInfo imageInfo, bool filtered)
         {
             if (!ImageExists(imageInfo, filtered))
             {
                 return null;
             }
             var path = GetFullPath(imageInfo, filtered);
-            Image image = Image.Load(path);
+            var image = Image.Load<Rgba32>(path);
             return image;
         }
     }

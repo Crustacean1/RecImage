@@ -11,9 +11,11 @@ namespace RecImage.Logic{
             Processed,
             Done
         }
-        Status CurrentStatus{get;set;}
-        Image? ResultImage{get;set;}
-        public Job(ImageInfo imageInfo){
+        public Status CurrentStatus{get;set;}
+        public Image? ResultImage{get;set;}
+        public List<IFilter> Filters{get;set;}
+        public Job(ImageInfo imageInfo,List<IFilter> filters){
+            Filters = filters;
             ImageToProcess = imageInfo;
             CompletionPercent = 0;
             CurrentStatus = Status.NotAssigned;

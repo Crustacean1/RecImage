@@ -42,26 +42,7 @@ namespace RecImage.Repositories
                     UserId = 2
                 }
             };
-            List<ImageInfo> metaData = new List<ImageInfo>{
-                        new ImageInfo{
-                            Id = 1,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "ladybug"
-                        },
-                        new ImageInfo{
-                            Id = 2,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "frog"
-                        },
-                        new ImageInfo {
-                            Id = 3,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "pepe"
-                        }
-            };
+            List<ImageInfo> metaData = new List<ImageInfo>{};
             builder.Entity<User>().HasData(users);
             builder.Entity<ImageInfo>().HasData(metaData);
         }

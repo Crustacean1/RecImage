@@ -12,6 +12,9 @@ public class Program
         string connectionString = builder.Configuration.GetConnectionString("cs");
         builder.Services.AddDbContext<RecImage.Repositories.RepositoryContext>((options)=>{options.UseMySql(connectionString,ServerVersion.AutoDetect(connectionString));});
         builder.Services.AddScoped<RecImage.Repositories.RepositoryManager>();
+        builder.Services.AddSingleton<RecImage.Repositories.ImageRepository>();
+        builder.Services.AddScoped<RecImage.Services.ImageService>();
+
         builder.Services.AddHostedService<RecImage.Logic.ImageProcessorService>();
 
         builder.Logging.ClearProviders();
@@ -31,7 +34,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        app.UseAuthorization();
+        //app.UseAuthorization();
 
         app.MapControllers();
 

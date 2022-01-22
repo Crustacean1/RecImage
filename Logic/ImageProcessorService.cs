@@ -3,20 +3,23 @@ using RecImage.Repositories;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace RecImage.Logic
 {
     public class ImageProcessorService : BackgroundService
     {
         private readonly ILogger<ImageProcessorService> _logger;
+        private readonly IImageRepository _imageRepository;
         private readonly Channel<Job> _jobQueue;
         private readonly ConcurrentDictionary<int, Job> _jobDict;
         private List<Task<Job>> _imageProcessingTasks;
         private int _threadCountLimit = 5;
 
-        public ImageProcessorService(ILogger<ImageProcessorService> logger)
+        public ImageProcessorService(ImageRepository imageRepository, ILogger<ImageProcessorService> logger)
         {
             _logger = logger;
+            _imageRepository = imageRepository;
             _jobQueue = Channel.CreateUnbounded<Job>();
             _jobDict = new ConcurrentDictionary<int, Job>();
             _imageProcessingTasks = new List<Task<Job>>();
@@ -37,26 +40,51 @@ namespace RecImage.Logic
             }
             return _jobDict[jobId];
         }
-        private static Job ProcessImage(Job imageJob, IEnumerable<IFilter> filters)
+        private Job ProcessImage(Job imageJob)
         {
-            Thread.Sleep(5000);
-            return new Job();
+            //Thread.Sleep(5000);
+            Image<Rgba32> image = _imageRepository.GetImage(imageJob.ImageToProcess, false);
+            if (image == null)
+            {
+                _logger.LogInformation("Failed to load image");
+            }
+            _logger.LogInformation("AAAA");
+            _logger.LogInformation("Filter count: " + imageJob.Filters.Count());
+            foreach (var filter in imageJob.Filters)
+            {
+                image = filter.FilterImage(image);
+                _logger.LogInformation("Processing image");
+                if (image == null)
+                {
+                    _logger.LogInformation("Filter failed to process image");
+                }
+            }
+            imageJob.ResultImage = image;
+            return imageJob;
             //return await Task.Delay(100);
         }
         private void StartJob(Job newJob)
         {
             if (newJob == null) { return; }
-            Task<Job> task = new Task<Job>(() => ProcessImage(newJob, new List<IFilter>()));
+            Task<Job> task = new Task<Job>(() => ProcessImage(newJob));
             _imageProcessingTasks.Add(task);
             task.Start();
             _logger.LogInformation("Adding new task");
         }
-        private async Task DequeueJobs()
+        private void DequeueJobs()
         {
             for (int i = 0; _imageProcessingTasks.Count() < _threadCountLimit && _jobQueue.Reader.TryRead(out Job? newJob); ++i)
             {
                 StartJob(newJob);
             }
+        }
+        public async Task SaveImage(Job completedJob)
+        {
+            if (completedJob.ResultImage == null || completedJob.ImageToProcess == null)
+            {
+                return;
+            }
+            await _imageRepository.SaveImage(completedJob.ResultImage, completedJob.ImageToProcess);
         }
         protected async override Task ExecuteAsync(CancellationToken token)
         {
@@ -71,6 +99,9 @@ namespace RecImage.Logic
 
                 int taskIndex = Task.WaitAny(_imageProcessingTasks.ToArray(), token);
                 Job newImage = await _imageProcessingTasks[taskIndex];
+                await SaveImage(newImage);
+                _logger.LogInformation("Image processed");
+
                 _imageProcessingTasks.RemoveAt(taskIndex);
 
                 DequeueJobs();

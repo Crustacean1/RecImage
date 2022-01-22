@@ -10,12 +10,14 @@ namespace RecImage.Controllers
     {
         private readonly ILogger _logger;
         private readonly RepositoryManager _repositoryManager;
+        private readonly ImageRepository _imageRepository;
         private static readonly string[] _allowedExtensions = { ".jpg", ".png", ".bmp" };
 
-        public ImageInfoController(ILogger<ImageInfoController> logger, RepositoryManager manager)
+        public ImageInfoController(ILogger<ImageInfoController> logger,ImageRepository imageRepository, RepositoryManager manager)
         {
             _logger = logger;
             _repositoryManager = manager;
+            _imageRepository = imageRepository;
         }
         [HttpGet("{metaId}")]
         public ActionResult<ImageInfoResponseDto> getImageInfoFromUserById(int metaId)
@@ -36,7 +38,7 @@ namespace RecImage.Controllers
             return new ImageInfoResponseDto(image);
         }
         [HttpGet]
-        public ActionResult<ICollection<ImageInfoResponseDto>> getAllImageInfoFromUser()
+        public ActionResult<ICollection<ImageInfoResponseDto>> GetAllImageInfoFromUser()
         {
             if(Request.Headers["x-user-id"].Equals("")){
                 return Forbid();
@@ -52,7 +54,7 @@ namespace RecImage.Controllers
             return resultImages.ToList();
         }
         [HttpPost]
-        public async Task<ActionResult<ImageInfoResponseDto>> createNewImageInfo([FromBody] ImageInfoRequestDto newImageDto)
+        public async Task<ActionResult<ImageInfoResponseDto>> CreateNewImageInfo([FromBody] ImageInfoRequestDto newImageDto)
         {
             if (Request.Headers["x-user-id"].Equals(""))
             {
@@ -70,63 +72,9 @@ namespace RecImage.Controllers
             return new ImageInfoResponseDto(newImage);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ImageInfoResponseDto>> createNewImageInfo(int id, IFormFile sourceImage)
-        {
-            _logger.LogInformation("User: "+ Request.Headers["x-user-id"]);
-            if (!Request.Headers.ContainsKey("x-user-id"))
-            {
-                return Unauthorized();
-            }
-            var userId = Convert.ToInt32((Request.Headers["x-user-id"]));
-            var user = _repositoryManager.Users.GetUserById(userId);
-            if (user == null)
-            {
-                return NotFound();
-            }
-            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id, trackChanges: true);
-            if (imageInfo == null)
-            {
-                ModelState.AddModelError("id", "invalid image id");
-                _logger.LogInformation("imageInfo is null");
-                return BadRequest(ModelState);
-            }
-            if (imageInfo.ImageUserId != user.UserId)
-            {
-                ModelState.AddModelError("user", "unauthorized user");
-                _logger.LogInformation("Unathorized upload: " + user.UserId);
-                return BadRequest(ModelState);
-            }
-            if (imageInfo.IsUploaded)
-            {
-                ModelState.AddModelError("id", "image already uploaded");
-                _logger.LogInformation("Image already uploaded");
-                return BadRequest(ModelState);
-            }
-            if (sourceImage == null)
-            {
-                ModelState.AddModelError("sourceImage", "no file provided");
-                _logger.LogInformation("source Image is null");
-                return BadRequest(ModelState);
-            }
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _repositoryManager.Images.UpdateImageInfo(sourceImage, imageInfo);
-            if (!_allowedExtensions.Contains(imageInfo.Extension))
-            {
-                return BadRequest();
-            }
-
-            await _repositoryManager.Images.SaveImage(sourceImage, imageInfo, transformed: false);
-            imageInfo.IsUploaded = true;
-            _repositoryManager.SaveChanges();
-            return new ImageInfoResponseDto(imageInfo);
-        }
+        
         [HttpDelete("{id}")]
-        public ActionResult DeleteImage(int id)
+        public async Task<ActionResult> DeleteImage(int id)
         {
             if (Request.Headers["x-user-id"].Equals(""))
             {
@@ -143,9 +91,9 @@ namespace RecImage.Controllers
             {
                 return NotFound();
             }
-            _repositoryManager.Images.DeleteImage(imageInfo);
+            _imageRepository.DeleteImage(imageInfo);
             _repositoryManager.ImageInfo.DeleteImageInfo(imageInfo);
-            _repositoryManager.SaveChanges();
+            await _repositoryManager.SaveChangesAsync();
             return Ok();
         }
     }
