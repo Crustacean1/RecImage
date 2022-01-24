@@ -57,7 +57,7 @@ namespace RecImage.Services
         public async Task<ImageInfo> CreateImage(IFormFile image,User user, string name)
         {
             _logger.LogInformation("Now creating image: " + name);
-            var imageInfo = new ImageInfo();
+            var imageInfo = new ImageInfo(name);
             UpdateImageInfo(image, imageInfo);
             if (!CheckExtension(imageInfo.Extension))
             {

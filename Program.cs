@@ -7,14 +7,6 @@ public class Program
 
         // Add services to the container.
 
-        var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-        /*builder.Services.AddCors(options =>
-        {
-            options.AddPolicy(name: MyAllowSpecificOrigins,
-            builder =>{
-                builder.WithOrigins("http://localhost:3000/").AllowAnyHeader().AllowAnyMethod();
-            });
-        });*/
         builder.Services.AddCors();
 
         builder.Services.AddControllers();
@@ -30,9 +22,10 @@ public class Program
 
         builder.Logging.ClearProviders();
         builder.Logging.AddConsole();
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-        //builder.Services.AddEndpointsApiExplorer();
-        //builder.Services.AddSwaggerGen();
+
+        RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.BlurFilter>("Blur");
+        RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.FlipFilter>("Flip");
+        RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.InverseFilter>("Inverse");
 
         var app = builder.Build();
 

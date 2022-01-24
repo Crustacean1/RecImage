@@ -96,6 +96,7 @@ namespace RecImage.Controllers
                 {
                     return NotFound();
                 }
+                _logger.LogInformation("Adding new image: " + name);
                 var imageInfo = await _imageService.CreateImage(image, user, name);
                 return new ImageInfoResponseDto(imageInfo);
             }

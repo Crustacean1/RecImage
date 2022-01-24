@@ -5,33 +5,36 @@ namespace RecImage.Logic
         public FilterFactory()
         {
         }
-        private static IFilter createFilterByName(string filterName)
-        {
-            switch (filterName)
-            {
-                case "Inverse":
-                    return new InverseFilter();
-                case "Flip":
-                    return new FlipFilter();
-                case "Blur":
-                    return new BlurFilter();
-                default:
-                    return null;
+        private static IFilter CreateFilter<T>() where T : IFilter, new(){
+            return new T();
+        }
+        private static Dictionary<string,Func<IFilter>> _filterDict = new Dictionary<string,Func<IFilter>>();
+        public static void AddFilter<T>(string name) where T : IFilter, new(){
+            if(_filterDict.ContainsKey(name)){
+                throw new InvalidDataException("Can't have filters with the same names");
             }
+            _filterDict[name] = CreateFilter<T>;
+
         }
         public static List<IFilter> buildFilters(IEnumerable<string> filterNames)
         {
             var result = new List<IFilter>();
             foreach (var filterName in filterNames)
             {
-                var newFilter = createFilterByName(filterName);
-                if (newFilter == null)
-                {
-                    throw new ArgumentException("Invalid filter name passed");
+                if(_filterDict.ContainsKey(filterName)){
+                    throw new ArgumentException("Invalid filter name");
                 }
+                var newFilter = _filterDict[filterName]();
                 result.Add(newFilter);
             }
             return result;
+        }
+        public static List<string> GetFilterNames(){
+            List<string> names = new List<string>();
+            foreach(var name in _filterDict){
+                names.Add(name.Key);
+            }
+            return names;
         }
     }
 }
