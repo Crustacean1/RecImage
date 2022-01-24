@@ -19,29 +19,30 @@ namespace RecImage.Controllers
             _repoManager = manager;
             _authService = authService;
         }
-        //Debug only
-        [HttpGet]
-        public async Task<ActionResult<List<UserResultDto>>> GetAllUsers()
-        {
-            var users = await _repoManager.Users.GetAllUsers();
-            List<UserResultDto> usersWithDto = users.Select<User, UserResultDto>(u => { return new UserResultDto(u, u.Images.Select(i => new ImageInfoResponseDto(i)).ToList()); }).ToList();
-            return usersWithDto;
-        }
         [HttpGet("{id}")]
         public ActionResult<UserResultDto> GetUser(int id)
         {
-            var user = _authService.AuthorizeUserAccess(Request.Headers, id);
-            if (user == null)
+            try
             {
-                _logger.LogInformation("Access denied for: " + id);
-                return NotFound();
+                _logger.LogInformation("Accessing user data at: " + id);
+                var user = _authService.AuthorizeUserAccess(Request.Headers, id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                var userResponse = new UserResultDto(user, user.Images.Select(i => new ImageInfoResponseDto(i)).ToList());
+                return userResponse;
             }
-            var userResponse = new UserResultDto(user, user.Images.Select(i => new ImageInfoResponseDto(i)).ToList());
-            return userResponse;
+            catch (InvalidDataException e)
+            {
+                _logger.LogInformation(e.ToString());
+                return Unauthorized();
+            }
         }
         [HttpPost]
-        public async Task<ActionResult<User>> LoginUser([FromBody] UserLoginDto user)
+        public async Task<ActionResult<UserResultDto>> LoginUser([FromBody] UserLoginDto user)
         {
+            _logger.LogInformation("User is trying to log in");
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -49,9 +50,9 @@ namespace RecImage.Controllers
             var newUser = _authService.LoginUser(user);
             if (newUser == null)
             {
-                return Forbid();
+                return Unauthorized();
             }
-            return newUser;
+            return new UserResultDto(newUser, newUser.Images.Select(i => new ImageInfoResponseDto(i)).ToList());
         }
     }
 }

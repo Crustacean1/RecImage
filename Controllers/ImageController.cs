@@ -28,19 +28,31 @@ namespace RecImage.Controllers
         [HttpGet("{id}")]
         public ActionResult GetImage(int id)
         {
-            var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id);
-            if (imageInfo == null)
+            try
             {
-                return NotFound("No such image info found");
+                var imageInfo = _authService.AuthorizeImageAccess(Request.Headers, id);
+                if (imageInfo == null)
+                {
+                    return NotFound("No such image info found");
+                }
+                var fullPath = _imageService.GetImagePath(imageInfo);
+                var mimeType = new string("");
+                var mimeProvider = new FileExtensionContentTypeProvider().TryGetContentType(fullPath, out mimeType);
+                if (mimeType == null)
+                {
+                    return StatusCode(500, "Couldn't infer mime type");
+                }
+                try
+                {
+                    return PhysicalFile(fullPath, mimeType, imageInfo.Name);
+                }catch(Exception e){
+                    return NotFound("Image is being processed");
+                }
             }
-            var fullPath = _imageService.GetImagePath(imageInfo);
-            var mimeType = new string("");
-            var mimeProvider = new FileExtensionContentTypeProvider().TryGetContentType(fullPath, out mimeType);
-            if (mimeType == null)
+            catch (ArgumentException e)
             {
-                return StatusCode(500, "Couldn't infer mime type");
+                return Unauthorized();
             }
-            return PhysicalFile(fullPath, mimeType, imageInfo.Name);
         }
         [HttpGet]
         public ActionResult GetAllFilters()
@@ -50,58 +62,65 @@ namespace RecImage.Controllers
         [HttpPost("{id}")]
         public async Task<ActionResult> ApplyFilter(int id, IEnumerable<string> filterList)
         {
-            var imageInfo = _authService.AuthorizeImageAccess(Request.Headers,id);
-            if(imageInfo == null){
-                return NotFound();
-            }
             try
             {
-                List<IFilter> filters = FilterFactory.buildFilters(filterList);
-                await _imageProcessor.AddNewJob(new Job(imageInfo, filters));
+                var imageInfo = _authService.AuthorizeImageAccess(Request.Headers, id);
+                if (imageInfo == null)
+                {
+                    return NotFound();
+                }
+                try
+                {
+                    List<IFilter> filters = FilterFactory.buildFilters(filterList);
+                    await _imageProcessor.AddNewJob(new Job(imageInfo, filters));
+                }
+                catch (ArgumentException e)
+                {
+                    _logger.LogInformation("Failed to construct filter list: " + e.ToString());
+                    return BadRequest();
+                }
+                return Ok();
             }
             catch (ArgumentException e)
             {
-                _logger.LogInformation("Failed to construct filter list: " + e.ToString());
-                return BadRequest();
+                return Unauthorized();
             }
-            return Ok();
         }
-        [HttpPut("{id}")]
-        public async Task<ActionResult<ImageInfoResponseDto>> CreateNewImage(int id, IFormFile image,[FromForm] string filepath)
+        [HttpPut]
+        public async Task<ActionResult<ImageInfoResponseDto>> CreateNewImage(IFormFile image, [FromForm] string name)
         {
-            _logger.LogInformation(filepath);
-            var imageInfo = _authService.AuthorizeImageAccess(Request.Headers,id);
-            if (imageInfo == null)
+            try
             {
-                ModelState.AddModelError("id", "invalid image id");
-                _logger.LogInformation("imageInfo is null");
-                return BadRequest(ModelState);
+                var user = _authService.GetUserFromHeader(Request.Headers);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+                var imageInfo = await _imageService.CreateImage(image, user, name);
+                return new ImageInfoResponseDto(imageInfo);
             }
-            if (imageInfo.IsUploaded)
+            catch (ArgumentException e)
             {
-                ModelState.AddModelError("id", "image already uploaded");
-                _logger.LogInformation("Image already uploaded");
-                return BadRequest(ModelState);
+                return Unauthorized();
             }
-            if (image == null)
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteImage(int id)
+        {
+            try
             {
-                ModelState.AddModelError("sourceImage", "no file provided");
-                _logger.LogInformation("source Image is null");
-                return BadRequest(ModelState);
+                var imageInfo = _authService.AuthorizeImageAccess(Request.Headers, id);
+                if (imageInfo == null)
+                {
+                    return NotFound();
+                }
+                await _imageService.RemoveImage(imageInfo);
+                return Ok();
             }
-
-            _imageService.UpdateImageInfo(image, imageInfo);
-            if (!_imageService.CheckExtension(imageInfo.Extension))
+            catch (ArgumentException e)
             {
-                return BadRequest();
+                return Unauthorized();
             }
-
-            _logger.LogInformation("Started saving");
-            await _imageService.SaveImage(image, imageInfo);
-            _logger.LogInformation("Finished saving");
-            imageInfo.IsUploaded = true;
-            await _repositoryManager.SaveChangesAsync();
-            return new ImageInfoResponseDto(imageInfo);
         }
     }
 }

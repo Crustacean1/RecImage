@@ -11,8 +11,8 @@ namespace RecImage.Services
             _repositoryManager = repositoryManager;
         }
         public User? GetUserFromHeader(IHeaderDictionary headers){
-            if(!headers.ContainsKey("x-user-login")){return null;}
-            int userId = Convert.ToInt32(headers["x-user-login"]);
+            if(!headers.ContainsKey("x-recimage-id")){return null;}
+            int userId = Convert.ToInt32(headers["x-recimage-id"]);
             return _repositoryManager.Users.GetUserById(userId);
         }
         public User? AuthorizeUserAccess(IHeaderDictionary headers,int accessedUserId){
@@ -24,7 +24,7 @@ namespace RecImage.Services
             if(user.UserId == accessedUserId){
                 return user;
             }
-            return null;
+            throw new ArgumentException("Invalid credentials");
         }
         public ImageInfo? AuthorizeImageAccess(IHeaderDictionary headers, int imageInfoId)
         {
@@ -41,7 +41,7 @@ namespace RecImage.Services
             if(imageInfo.ImageUserId == user.UserId){
                 return imageInfo;
             }
-            return null;
+            throw new ArgumentException("Invalid credentials");
         }
         public async Task<User> RegisterUser(UserRegistrationDto userDto)
         {

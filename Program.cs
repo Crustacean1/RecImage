@@ -7,6 +7,16 @@ public class Program
 
         // Add services to the container.
 
+        var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+        /*builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: MyAllowSpecificOrigins,
+            builder =>{
+                builder.WithOrigins("http://localhost:3000/").AllowAnyHeader().AllowAnyMethod();
+            });
+        });*/
+        builder.Services.AddCors();
+
         builder.Services.AddControllers();
 
         string connectionString = builder.Configuration.GetConnectionString("cs");
@@ -34,8 +44,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-
-        //app.UseAuthorization();
+        app.UseCors(options =>{options.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();});
 
         app.MapControllers();
 

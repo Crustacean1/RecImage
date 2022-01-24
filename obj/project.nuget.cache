@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1pQNJDi1t3YD5EuuIWcrcJI6Rb7F9szAnEyahNh2mtnmseh2vx9Bp2etPl+v63HIPCiRc/f5WcKV2jS/DGIxBA==",
+  "dgSpecHash": "fk7ZWGJQBgfJFEFpgKalFZDCnHteFOCyzPmISC9SoGP6K4KnXfoIVJ3fKqLXUiXqQMHnsHroucOgDoLCQMuiRg==",
   "success": true,
   "projectFilePath": "/home/kamil2/Projects/Recruitment/RecImage/RecImage.csproj",
   "expectedPackageFiles": [
@@ -9,6 +9,7 @@
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.authentication.abstractions/2.2.0/microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.authentication.core/2.2.0/microsoft.aspnetcore.authentication.core.2.2.0.nupkg.sha512",
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.connections.abstractions/2.2.0/microsoft.aspnetcore.connections.abstractions.2.2.0.nupkg.sha512",
+    "/home/kamil2/.nuget/packages/microsoft.aspnetcore.cors/2.2.0/microsoft.aspnetcore.cors.2.2.0.nupkg.sha512",
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.diagnostics/2.2.0/microsoft.aspnetcore.diagnostics.2.2.0.nupkg.sha512",
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.diagnostics.abstractions/2.2.0/microsoft.aspnetcore.diagnostics.abstractions.2.2.0.nupkg.sha512",
     "/home/kamil2/.nuget/packages/microsoft.aspnetcore.hostfiltering/2.2.0/microsoft.aspnetcore.hostfiltering.2.2.0.nupkg.sha512",
