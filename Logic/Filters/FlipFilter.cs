@@ -19,7 +19,6 @@ namespace RecImage.Logic
                 {
                     var leftPixel = rowSpan[x]; 
                     rowSpan[x] = rowSpan[image.Width -1 - x];
-                    rowSpan[x] = rowSpan[image.Width- 1 - x];
                     rowSpan[image.Width- 1 - x] = leftPixel;
                 }
                

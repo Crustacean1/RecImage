@@ -28,6 +28,7 @@ public class Program
         RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.BlurFilter>("Blur");
         RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.FlipFilter>("Flip");
         RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.InverseFilter>("Inverse");
+        RecImage.Logic.FilterFactory.AddFilter<RecImage.Logic.WobbleFilter>("BoogieWoogie");
 
         var app = builder.Build();
 
