@@ -6,13 +6,13 @@ namespace RecImage.Logic
 {
     public class WobbleFilter : IFilter
     {
-        private int _maxHarmonic = 500;
+        private int _maxHarmonic = 200;
         private int _minHarmonic = 50;
         private int _basicOffset = 15;
         private int[] _harmonics;
         public WobbleFilter()
         {
-            _harmonics = generateHarmonics(10);
+            _harmonics = generateHarmonics(5);
         }
         private int[] generateHarmonics(int n)
         {
@@ -28,11 +28,15 @@ namespace RecImage.Logic
         {
             double totalOffset = 0;
             double buffor;
+            double freq = 400;
+            double lowPass = 0;
+            double highPass = 100;
             foreach (var harmonic in _harmonics)
             {
                 buffor = height;
-                buffor /= harmonic;
-                totalOffset += _basicOffset * Math.Sin(buffor);
+                buffor/=freq;
+                totalOffset += harmonic * Math.Sin(buffor) * ((freq+highPass)/(freq+lowPass));
+                freq -= 80;
             }
             return (int)totalOffset;
         }
