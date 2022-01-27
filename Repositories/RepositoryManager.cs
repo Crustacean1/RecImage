@@ -4,6 +4,7 @@ namespace RecImage.Repositories
     {
         private IUserRepository? _users;
         private IImageInfoRepository? _imageInfo;
+        private ITransformRepository? _transforms;
         //private IImageRepository _images;
         private RepositoryContext _context;
         public RepositoryManager(RepositoryContext context)
@@ -32,15 +33,15 @@ namespace RecImage.Repositories
                 return _imageInfo;
             }
         }
-
-        /*public IImageRepository Images{
+        public ITransformRepository Transforms
+        {
             get{
-                if(_images == null){
-                    _images = new ImageRepository();
+                if(_transforms == null){
+                    _transforms = new TransformRepository(_context);
                 }
-                return _images;
+                return _transforms;
             }
-        }*/
+        }
 
         public void SaveChanges()
         {

@@ -12,30 +12,39 @@ namespace RecImage.Controllers
     public class ImageController : ControllerBase
     {
         private readonly RepositoryManager _repositoryManager;
-        private readonly ImageService _imageService;
+        private readonly ImageRepository _imageRepository;
         private readonly AuthorizationService _authService;
-        private readonly ImageProcessorService _imageProcessor;
+        private readonly ProcessorService _imageProcessor;
 
         private readonly ILogger<ImageController> _logger;
-        public ImageController(RepositoryManager repositoryManager, AuthorizationService authService, ImageService imageService, IServiceProvider serviceProvider, ILogger<ImageController> logger)
+        public ImageController(RepositoryManager repositoryManager, AuthorizationService authService, ImageRepository imageRepository, ProcessorService imageProcessor, ILogger<ImageController> logger)
         {
             _repositoryManager = repositoryManager;
-            _imageService = imageService;
+            _imageRepository = imageRepository;
             _authService = authService;
             _logger = logger;
-            _imageProcessor = serviceProvider.GetServices<IHostedService>().OfType<ImageProcessorService>().First();
+            _imageProcessor = imageProcessor;
         }
         [HttpGet("{id}")]
         public ActionResult GetImage(int id)
         {
             try
             {
-                var imageInfo = _authService.AuthorizeImageAccess(Request.Headers, id);
+                var imageInfo = _repositoryManager.ImageInfo.GetImageInfo(id);
+                //var imageInfo = _authService.AuthorizeImageAccess(Request.Headers, id);
                 if (imageInfo == null)
                 {
                     return NotFound("No such image info found");
                 }
-                var fullPath = _imageService.GetImagePath(imageInfo);
+                var latestTransform = _repositoryManager.Transforms.GetLatestTransform(imageInfo);
+                if(latestTransform == null){
+                    return NotFound("Wierd, there should be at least one transform...");
+                }
+                var fullPath = _imageRepository.GetDefaultPath(latestTransform);
+                _logger.LogInformation(fullPath+ " " + latestTransform.Id);
+                if(fullPath == null){
+                    return NotFound("No such image exists on server");
+                }
                 var mimeType = new string("");
                 var mimeProvider = new FileExtensionContentTypeProvider().TryGetContentType(fullPath, out mimeType);
                 if (mimeType == null)
@@ -72,7 +81,7 @@ namespace RecImage.Controllers
                 try
                 {
                     List<IFilter> filters = FilterFactory.buildFilters(filterList);
-                    await _imageProcessor.AddNewJob(new Job(imageInfo, filters));
+                    await _imageProcessor.TransformImage(new Job(imageInfo, filters));
                 }
                 catch (ArgumentException e)
                 {
@@ -97,7 +106,7 @@ namespace RecImage.Controllers
                     return NotFound();
                 }
                 _logger.LogInformation("Adding new image: " + name);
-                var imageInfo = await _imageService.CreateImage(image, user, name);
+                var imageInfo = await _imageProcessor.CreateNewImage(image,user,name);
                 return new ImageInfoResponseDto(imageInfo);
             }
             catch (ArgumentException e)
@@ -115,13 +124,17 @@ namespace RecImage.Controllers
                 {
                     return NotFound();
                 }
-                await _imageService.RemoveImage(imageInfo);
+                await _imageProcessor.DeleteImage(imageInfo);
                 return Ok();
             }
             catch (ArgumentException e)
             {
                 return Unauthorized();
             }
+        }
+        [HttpGet("filters")]
+        public ActionResult<string[]> GetFilterList(){
+            return FilterFactory.GetFilterNames().ToArray();
         }
     }
 }

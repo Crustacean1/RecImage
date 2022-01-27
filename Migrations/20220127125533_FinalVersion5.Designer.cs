@@ -10,13 +10,14 @@ using RecImage.Repositories;
 namespace RecImage.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220121195205_ImageInfoReduction")]
-    partial class ImageInfoReduction
+    [Migration("20220127125533_FinalVersion5")]
+    partial class FinalVersion5
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseCollation("latin1_general_cs")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
@@ -26,46 +27,42 @@ namespace RecImage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrentTransformId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Extension")
                         .HasColumnType("longtext");
 
                     b.Property<int>("ImageUserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsUploaded")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CurrentTransformId")
+                        .IsUnique();
+
                     b.HasIndex("ImageUserId");
 
                     b.ToTable("ImageInfo");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "ladybug"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "frog"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ImageUserId = 1,
-                            IsUploaded = false,
-                            Name = "pepe"
-                        });
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageInfoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageInfoId");
+
+                    b.ToTable("Transforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>
@@ -96,13 +93,35 @@ namespace RecImage.Migrations
 
             modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
                 {
+                    b.HasOne("RecImage.Models.Transform", "CurrentTransform")
+                        .WithOne()
+                        .HasForeignKey("RecImage.Models.ImageInfo", "CurrentTransformId");
+
                     b.HasOne("RecImage.Models.User", "ImageUser")
                         .WithMany("Images")
                         .HasForeignKey("ImageUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("CurrentTransform");
+
                     b.Navigation("ImageUser");
+                });
+
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.HasOne("RecImage.Models.ImageInfo", "OriginalImage")
+                        .WithMany("ImageTransforms")
+                        .HasForeignKey("ImageInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OriginalImage");
+                });
+
+            modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
+                {
+                    b.Navigation("ImageTransforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>

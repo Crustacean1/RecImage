@@ -13,6 +13,7 @@ namespace RecImage.Repositories{
         }
         public DbSet<User>? Users{get;set;}
         public DbSet<ImageInfo>? ImageInfo{get;set;}
+        public DbSet<Transform>? Transforms{get;set;}
     
     }
 }

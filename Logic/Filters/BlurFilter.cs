@@ -24,7 +24,7 @@ namespace RecImage.Logic
             (byte)Math.Max(Math.Min(averages[1] / divisor, 255), 0),
             (byte)Math.Max(Math.Min(averages[2] / divisor, 255), 0), 255);
         }
-        public void FilterImage(Image<Rgba32> image, JobInfo jobInfo)
+        public void FilterImage(Image<Rgba32> image)
         {
             int blur = 5;
             for (int y = blur; y < image.Height - blur; ++y)
@@ -42,7 +42,6 @@ namespace RecImage.Logic
                     }
                     image.GetPixelRowSpan(y)[x] = ComputeAverage(averages, blur * 2 + 1);
                 }
-                jobInfo.CompletionPercent = (int)(100 * y /image.Height);
             }
         }
     }

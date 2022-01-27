@@ -4,6 +4,6 @@ using RecImage.Models;
 
 namespace RecImage.Logic{
     public interface IFilter{
-        void FilterImage(Image<Rgba32> image, JobInfo jobInfo);
+        void FilterImage(Image<Rgba32> image);
     }
 }

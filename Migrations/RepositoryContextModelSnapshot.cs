@@ -31,9 +31,6 @@ namespace RecImage.Migrations
                     b.Property<int>("ImageUserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsTransformed")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
@@ -42,6 +39,25 @@ namespace RecImage.Migrations
                     b.HasIndex("ImageUserId");
 
                     b.ToTable("ImageInfo");
+                });
+
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("ImageInfoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageInfoId");
+
+                    b.ToTable("Transforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>
@@ -79,6 +95,22 @@ namespace RecImage.Migrations
                         .IsRequired();
 
                     b.Navigation("ImageUser");
+                });
+
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.HasOne("RecImage.Models.ImageInfo", "OriginalImage")
+                        .WithMany("ImageTransforms")
+                        .HasForeignKey("ImageInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OriginalImage");
+                });
+
+            modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
+                {
+                    b.Navigation("ImageTransforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>

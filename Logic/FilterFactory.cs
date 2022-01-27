@@ -13,7 +13,7 @@ namespace RecImage.Logic
             if(_filterDict.ContainsKey(name)){
                 throw new InvalidDataException("Can't have filters with the same names");
             }
-            _filterDict[name] = CreateFilter<T>;
+            _filterDict.Add(name,CreateFilter<T>);
 
         }
         public static List<IFilter> buildFilters(IEnumerable<string> filterNames)
@@ -21,8 +21,8 @@ namespace RecImage.Logic
             var result = new List<IFilter>();
             foreach (var filterName in filterNames)
             {
-                if(_filterDict.ContainsKey(filterName)){
-                    throw new ArgumentException("Invalid filter name");
+                if(!_filterDict.ContainsKey(filterName)){
+                    throw new ArgumentException("Invalid filter name: "+filterName);
                 }
                 var newFilter = _filterDict[filterName]();
                 result.Add(newFilter);

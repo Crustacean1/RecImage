@@ -10,8 +10,8 @@ using RecImage.Repositories;
 namespace RecImage.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220124105635_ImageInfoTweaks")]
-    partial class ImageInfoTweaks
+    [Migration("20220127125207_FinalVersion3")]
+    partial class FinalVersion3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -27,23 +27,42 @@ namespace RecImage.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("CurrentTransformId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Extension")
                         .HasColumnType("longtext");
 
                     b.Property<int>("ImageUserId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsTransformed")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CurrentTransformId")
+                        .IsUnique();
+
                     b.HasIndex("ImageUserId");
 
                     b.ToTable("ImageInfo");
+                });
+
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ImageInfoId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ImageInfoId");
+
+                    b.ToTable("Transforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>
@@ -74,13 +93,35 @@ namespace RecImage.Migrations
 
             modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
                 {
+                    b.HasOne("RecImage.Models.Transform", "CurrentTransform")
+                        .WithOne()
+                        .HasForeignKey("RecImage.Models.ImageInfo", "CurrentTransformId");
+
                     b.HasOne("RecImage.Models.User", "ImageUser")
                         .WithMany("Images")
                         .HasForeignKey("ImageUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("CurrentTransform");
+
                     b.Navigation("ImageUser");
+                });
+
+            modelBuilder.Entity("RecImage.Models.Transform", b =>
+                {
+                    b.HasOne("RecImage.Models.ImageInfo", "OriginalImage")
+                        .WithMany("ImageTransforms")
+                        .HasForeignKey("ImageInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("OriginalImage");
+                });
+
+            modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
+                {
+                    b.Navigation("ImageTransforms");
                 });
 
             modelBuilder.Entity("RecImage.Models.User", b =>

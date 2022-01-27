@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Design;
 using RecImage.Models;
 
 namespace RecImage.Repositories
@@ -45,6 +47,10 @@ namespace RecImage.Repositories
             List<ImageInfo> metaData = new List<ImageInfo>{};
             builder.Entity<User>().HasData(users);
             builder.Entity<ImageInfo>().HasData(metaData);
+
+            builder.Entity<Transform>().HasOne( tr => tr.OriginalImage)
+            .WithMany(im => im.ImageTransforms)
+            .HasForeignKey(tr=>tr.ImageInfoId);
         }
     }
 }
