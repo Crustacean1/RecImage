@@ -37,11 +37,6 @@ CREATE TABLE `ImageInfo` (
 -- Dumping data for table `ImageInfo`
 --
 
-LOCK TABLES `ImageInfo` WRITE;
-/*!40000 ALTER TABLE `ImageInfo` DISABLE KEYS */;
-INSERT INTO `ImageInfo` VALUES (32,'presidente','.jpg',1),(33,'xkcd','.jpg',1),(34,'usos','.png',1),(35,'Linus was right','.png',1);
-/*!40000 ALTER TABLE `ImageInfo` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `Transforms`
@@ -64,12 +59,6 @@ CREATE TABLE `Transforms` (
 -- Dumping data for table `Transforms`
 --
 
-LOCK TABLES `Transforms` WRITE;
-/*!40000 ALTER TABLE `Transforms` DISABLE KEYS */;
-INSERT INTO `Transforms` VALUES (132,32,1),(137,34,1),(139,33,1),(141,35,1);
-/*!40000 ALTER TABLE `Transforms` ENABLE KEYS */;
-UNLOCK TABLES;
-
 --
 -- Table structure for table `Users`
 --
@@ -88,11 +77,6 @@ CREATE TABLE `Users` (
 -- Dumping data for table `Users`
 --
 
-LOCK TABLES `Users` WRITE;
-/*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (1,'kamil@crustacean.pl'),(2,'limak@naecatsurc.lp');
-/*!40000 ALTER TABLE `Users` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `__EFMigrationsHistory`
