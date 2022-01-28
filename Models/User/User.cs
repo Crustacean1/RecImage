@@ -3,13 +3,8 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace RecImage.Models{
     public class User{
-        public User(){}
-        public User(string login){}
-        public User(UserInfoDto user){
-            Login  = user.Login;
-        }
-        public User(UserRegistrationDto user){
-            Login  = user.Login;
+        public User(){
+            Images = new List<ImageInfo>();
         }
         public User(UserLoginDto user){
             Login  = user.Login;

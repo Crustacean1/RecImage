@@ -8,7 +8,7 @@ namespace RecImage.Repositories{
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder){
             var userConf = new UserConfiguration();
-            modelBuilder.UseCollation("latin1_general_cs");
+            modelBuilder.UseCollation("utf8_general_ci");
             userConf.Configure(modelBuilder);
         }
         public DbSet<User>? Users{get;set;}

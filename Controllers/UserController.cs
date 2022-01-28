@@ -47,12 +47,17 @@ namespace RecImage.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var newUser = _authService.LoginUser(user);
+            var newUser = await _authService.LoginUser(user);
             if (newUser == null)
             {
                 return Unauthorized();
             }
-            return new UserResultDto(newUser, newUser.Images.Select(i => new ImageInfoResponseDto(i)).ToList());
+            var userImages = new List<ImageInfoResponseDto>();
+            if(newUser.Images!=null){
+                userImages = newUser.Images.Select(i => new ImageInfoResponseDto(i)).ToList();
+            }
+            
+            return new UserResultDto(newUser, userImages);
         }
     }
 }

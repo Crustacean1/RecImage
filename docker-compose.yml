@@ -1,0 +1,8 @@
+version: "1.0"
+services:
+    recimage:
+        build: ./
+        ports:
+        - "5001:5001"
+    recimagedb:
+        build: ./MySql

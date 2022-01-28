@@ -43,7 +43,7 @@ namespace RecImage.Services
             }
             throw new ArgumentException("Invalid credentials");
         }
-        public async Task<User> RegisterUser(UserRegistrationDto userDto)
+        public async Task<User> RegisterUser(UserLoginDto userDto)
         {
             var user = new User(userDto);
             if(userDto == null){
@@ -60,11 +60,14 @@ namespace RecImage.Services
             await _repositoryManager.SaveChangesAsync();
             return user;
         }
-        public User? LoginUser(UserLoginDto userLogin){
+        public async Task<User?> LoginUser(UserLoginDto userLogin){
             if(userLogin == null || userLogin.Login == null){
                 return null;
             }
             var user = _repositoryManager.Users.GetUserByLogin(userLogin.Login);
+            if(user == null){
+                return await RegisterUser(userLogin);
+            }
             return user;
         }
     }

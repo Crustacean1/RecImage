@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace RecImage.Migrations
 {
-    public partial class FinalVersion : Migration
+    public partial class Finale : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,13 +15,13 @@ namespace RecImage.Migrations
                 {
                     UserId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Login = table.Column<string>(type: "longtext", nullable: true, collation: "latin1_general_cs")
+                    Login = table.Column<string>(type: "longtext", nullable: true, collation: "utf8_general_ci")
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.UserId);
                 })
-                .Annotation("Relational:Collation", "latin1_general_cs");
+                .Annotation("Relational:Collation", "utf8_general_ci");
 
             migrationBuilder.CreateTable(
                 name: "ImageInfo",
@@ -29,10 +29,9 @@ namespace RecImage.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Name = table.Column<string>(type: "longtext", nullable: true, collation: "latin1_general_cs"),
-                    Extension = table.Column<string>(type: "longtext", nullable: true, collation: "latin1_general_cs"),
-                    ImageUserId = table.Column<int>(type: "int", nullable: false),
-                    CurrentTransformId = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "longtext", nullable: true, collation: "utf8_general_ci"),
+                    Extension = table.Column<string>(type: "longtext", nullable: true, collation: "utf8_general_ci"),
+                    ImageUserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -44,7 +43,7 @@ namespace RecImage.Migrations
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("Relational:Collation", "latin1_general_cs");
+                .Annotation("Relational:Collation", "utf8_general_ci");
 
             migrationBuilder.CreateTable(
                 name: "Transforms",
@@ -52,7 +51,8 @@ namespace RecImage.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ImageInfoId = table.Column<int>(type: "int", nullable: false)
+                    ImageInfoId = table.Column<int>(type: "int", nullable: false),
+                    Completed = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -64,7 +64,7 @@ namespace RecImage.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
-                .Annotation("Relational:Collation", "latin1_general_cs");
+                .Annotation("Relational:Collation", "utf8_general_ci");
 
             migrationBuilder.InsertData(
                 table: "Users",
@@ -77,12 +77,6 @@ namespace RecImage.Migrations
                 values: new object[] { 2, "limak@naecatsurc.lp" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ImageInfo_CurrentTransformId",
-                table: "ImageInfo",
-                column: "CurrentTransformId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ImageInfo_ImageUserId",
                 table: "ImageInfo",
                 column: "ImageUserId");
@@ -91,22 +85,10 @@ namespace RecImage.Migrations
                 name: "IX_Transforms_ImageInfoId",
                 table: "Transforms",
                 column: "ImageInfoId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_ImageInfo_Transforms_CurrentTransformId",
-                table: "ImageInfo",
-                column: "CurrentTransformId",
-                principalTable: "Transforms",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_ImageInfo_Transforms_CurrentTransformId",
-                table: "ImageInfo");
-
             migrationBuilder.DropTable(
                 name: "Transforms");
 

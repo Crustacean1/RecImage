@@ -31,23 +31,6 @@ namespace RecImage.Repositories
     {
         public void Configure(ModelBuilder builder)
         {
-            //builder.Entity<MetaData>().HasOne(m => m.).WithMany( u => u.Images);
-            List<User> users = new List<User>{
-                new User
-                {
-                    Login = "kamil@crustacean.pl",
-                    UserId = 1
-                },
-                new User
-                {
-                    Login = "limak@naecatsurc.lp",
-                    UserId = 2
-                }
-            };
-            List<ImageInfo> metaData = new List<ImageInfo>{};
-            builder.Entity<User>().HasData(users);
-            builder.Entity<ImageInfo>().HasData(metaData);
-
             builder.Entity<Transform>().HasOne( tr => tr.OriginalImage)
             .WithMany(im => im.ImageTransforms)
             .HasForeignKey(tr=>tr.ImageInfoId);

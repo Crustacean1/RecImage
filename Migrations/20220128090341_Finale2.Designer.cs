@@ -10,14 +10,14 @@ using RecImage.Repositories;
 namespace RecImage.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220127124546_FinalVersion2")]
-    partial class FinalVersion2
+    [Migration("20220128090341_Finale2")]
+    partial class Finale2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseCollation("latin1_general_cs")
+                .UseCollation("utf8_general_ci")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
@@ -25,9 +25,6 @@ namespace RecImage.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentTransformId")
                         .HasColumnType("int");
 
                     b.Property<string>("Extension")
@@ -41,9 +38,6 @@ namespace RecImage.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CurrentTransformId")
-                        .IsUnique();
-
                     b.HasIndex("ImageUserId");
 
                     b.ToTable("ImageInfo");
@@ -54,6 +48,9 @@ namespace RecImage.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("ImageInfoId")
                         .HasColumnType("int");
@@ -77,35 +74,15 @@ namespace RecImage.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Login = "kamil@crustacean.pl"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Login = "limak@naecatsurc.lp"
-                        });
                 });
 
             modelBuilder.Entity("RecImage.Models.ImageInfo", b =>
                 {
-                    b.HasOne("RecImage.Models.Transform", "CurrentTransform")
-                        .WithOne()
-                        .HasForeignKey("RecImage.Models.ImageInfo", "CurrentTransformId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("RecImage.Models.User", "ImageUser")
                         .WithMany("Images")
                         .HasForeignKey("ImageUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CurrentTransform");
 
                     b.Navigation("ImageUser");
                 });

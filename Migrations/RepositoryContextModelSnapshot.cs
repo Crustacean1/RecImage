@@ -15,7 +15,7 @@ namespace RecImage.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseCollation("latin1_general_cs")
+                .UseCollation("utf8_general_ci")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
@@ -72,18 +72,6 @@ namespace RecImage.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            Login = "kamil@crustacean.pl"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Login = "limak@naecatsurc.lp"
-                        });
                 });
 
             modelBuilder.Entity("RecImage.Models.ImageInfo", b =>

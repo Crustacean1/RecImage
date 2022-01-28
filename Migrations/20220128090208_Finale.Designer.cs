@@ -10,14 +10,14 @@ using RecImage.Repositories;
 namespace RecImage.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220127131952_FinalVersion6")]
-    partial class FinalVersion6
+    [Migration("20220128090208_Finale")]
+    partial class Finale
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .UseCollation("latin1_general_cs")
+                .UseCollation("utf8_general_ci")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
@@ -48,6 +48,9 @@ namespace RecImage.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    b.Property<bool>("Completed")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("ImageInfoId")
                         .HasColumnType("int");
